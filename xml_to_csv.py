@@ -33,8 +33,8 @@ def xml_to_csv(path):
     # 保存为CSV格式
     train_df = pd.DataFrame(train_list, columns=column_name)
     eval_df = pd.DataFrame(eval_list, columns=column_name)
-    train_df.to_csv('D:\\Images\\data_train.csv', index=None)
-    eval_df.to_csv('D:\\Images\\data_eval.csv', index=None)
+    train_df.to_csv('D:\\Images\\data_train.csv',encoding='utf_8_sig',index=None)
+    eval_df.to_csv('D:\\Images\\data_eval.csv',encoding='utf_8_sig', index=None)
 
 
 def main():
