@@ -35,7 +35,6 @@ class TOD(object):
                 od_graph_def.ParseFromString(serialized_graph)
                 tf.import_graph_def(od_graph_def, name='')
         return detection_graph
-
     def _load_label_map(self):
         label_map = label_map_util.load_labelmap(self.PATH_TO_LABELS)
         categories = label_map_util.convert_label_map_to_categories(label_map, max_num_classes=self.NUM_CLASSES, use_display_name=True)
