@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 import os
 import glob
 import pandas as pd
@@ -8,7 +5,9 @@ import xml.etree.ElementTree as ET
 
 
 def xml_to_csv(path):
-    xml_list = []
+    train_list = []
+    eval_list = []
+    i = 0
     # 读取注释文件
     for xml_file in glob.glob(path + '/*.xml'):
         tree = ET.parse(xml_file)
@@ -23,12 +22,13 @@ def xml_to_csv(path):
                      int(root.find('object')[4][2].text),
                      int(root.find('object')[4][3].text)
                      )
-        xml_list.append(value)
+# 将所有数据分为样本集和验证集，一般按照3:1的比例
+        if i%4==3:
+            eval_list.append(value)
+        else:
+            train_list.append(value)
+        i += 1
     column_name = ['filename', 'width', 'height', 'class', 'xmin', 'ymin', 'xmax', 'ymax']
-
-    # 将所有数据分为样本集和验证集，一般按照3:1的比例
-    train_list = xml_list[0: int(len(xml_list) * 0.67)]
-    eval_list = xml_list[int(len(xml_list) * 0.67) + 1: ]
 
     # 保存为CSV格式
     train_df = pd.DataFrame(train_list, columns=column_name)
@@ -37,9 +37,7 @@ def xml_to_csv(path):
     eval_df.to_csv('D:\\Images\\data_eval.csv',encoding='utf_8_sig', index=None)
 
 
-def main():
-    path = 'D:\\Images\\Annotations'
-    xml_to_csv(path)
-    print('Successfully converted xml to csv.')
 
-main()
+path = 'D:\\Images\\Annotations'
+xml_to_csv(path)
+print('Successfully converted xml to csv.')
