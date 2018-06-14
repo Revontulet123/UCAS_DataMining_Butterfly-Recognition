@@ -1,0 +1,13 @@
+任务思路：“蝴蝶识别与分类”本质上是属于图像处理的问题，而最近以卷积神经网络为核心的深度学习在图像处理问题中取得了显著突破，因而考虑利用深度学习的方法来解决。
+现有的效果较好的网络模型规模一般很大，如果从头开始训练则训练时间很长，而图像识别的问题被认为存在共性，因此可以借助“迁移学习”的思路，从已有开源的训练完成的模型开始训练自己的数据集，可以显著缩短训练时间。
+
+实现细节：
+1.首先搭建处理框架，Tensorflow为由谷歌公司开发的一个流行的机器学习开源框架，其中提供了面向物体检测与分类任务的API：object-detection,可在Github上下载并搭建【1】。完成后，则可以方便地更换模型来测试，必要的输出也已经定义好。
+2.之后处理数据集。大赛官方提供了生态照片集与模式照片集。其中生态照片集共94种，1408张。对于生态照片集，先按训练/检验数量3:1划分数据集，并且将只有一个样本的蝴蝶种类放入训练集。使用脚本xml_to_csv.py将Annotations标签文件转为csv，提取其中的'filename', 'width', 'height', 'class', 'xmin', 'ymin', 'xmax', 'ymax'。使用脚本TFrecord.py将图片与标签统一打包便于处理。编写类别文件为label_map.pbtxt。
+3.选择网络模型并训练。在Github object_detection项目下的model zoo中已经提供了一些预训练模型，综合考察计算速度与准确度，选择faster_rcnn_inception_v2_coco,而经过验证，ssd系列的模型在本任务中准确度较faster_rcnn低，速度也没有显著的提升。之后定义好管道文件pipeline.config，注意fine_tune_checkpoint改写为faster_rcnn_inception_v2_coco解压后的model.ckpt路径。开始训练，过程中可以用验证集进行验证。
+4.模型打包。验证后确认效果良好，之后将训练集与验证集归总，将全部生态照片作为新的训练集进行训练，处理方法同2。模型收敛后导出并打包为frozen_inference_graph.pb。
+5.打包为可执行文件。使用PyInstaller-3.3打包butterfly-A282.py,得到最终的可执行程序。
+
+参考资料
+1. https://github.com/tensorflow/models/blob/master/research/object_detection
+
